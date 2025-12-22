@@ -46,29 +46,7 @@ st.markdown("---")
 st.header("2️⃣ Upload Gambar")
 file = st.file_uploader("📤 Pilih gambar", type=["jpg", "jpeg", "png"])
 
-
-# ===============================
-# STEP 3: DETEKSI
-# ===============================
-if uploaded_file is not None:
-    # Validasi ukuran file
-    file_size_mb = uploaded_file.size / (1024 * 1024)
-    if file_size_mb > MAX_FILE_SIZE_MB:
-        st.error(f"❌ File terlalu besar! Max: {MAX_FILE_SIZE_MB}MB, ukuran file: {file_size_mb:.2f}MB")
-        st.stop()
-    
-    # Baca gambar yang diupload
-    try:
-        image = Image.open(uploaded_file).convert("RGB")
-        st.image(image, caption="Gambar Input", use_container_width=True)
-    except Exception as e:
-        st.error(f"❌ Error membaca gambar: {str(e)}")
-        st.stop()
-
-    # Tombol untuk mulai deteksi
-    if st.button("🔍 Jalankan Deteksi", type="primary"):
-        with st.spinner("Sedang melakukan deteksi..."):
-  Kalau ada file yang diupload
+# Kalau ada file yang diupload
 if file is not None:
     # Cek ukuran file
     size_mb = file.size / (1024 * 1024)
@@ -86,10 +64,12 @@ if file is not None:
             # Simpan gambar ke temporary file
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
             img.save(temp_file.name)
+            temp_file.close()  # Close file biar bisa dihapus nanti
+            temp_path = temp_file.name
             
             # Jalanin model
             t1 = time.time()
-            res = model.predict(source=temp_file.name, conf=threshold, verbose=False)
+            res = model.predict(source=temp_path, conf=threshold, verbose=False)
             t2 = time.time()
             waktu = t2 - t1
             
@@ -184,4 +164,7 @@ if file is not None:
                     st.download_button("📥 Download CSV", csv_data, "hasil_deteksi.csv", "text/csv")
             
             # Hapus file temporary
-            os.remove(temp_file.name)
+            try:
+                os.remove(temp_path)
+            except:
+                pass  # Ga masalah kalau gagal hapus
