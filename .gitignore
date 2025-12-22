@@ -55,3 +55,7 @@ hasil_deteksi.csv
 
 # Logs
 *.log
+
+# Documentation files (not needed in deployment)
+NEXT_STEPS.md
+DEPLOYMENT_GUIDE.md
