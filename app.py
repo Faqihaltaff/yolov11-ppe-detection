@@ -8,10 +8,8 @@ import time
 import pandas as pd
 import plotly.express as px
 
-# Config halaman
 st.set_page_config(page_title="YOLOv11 PPE Detection", layout="wide")
 
-# Variabel config
 max_size = 10  # MB
 model_files = {
     "YOLOv9": "yolov9.pt",
@@ -19,7 +17,6 @@ model_files = {
     "YOLOv11": "yolov11.pt"
 }
 
-# Definisi kelas APD dan Non-APD berdasarkan SH-17 PPE Dataset
 apd_classes = [
     'helmet', 'ear-mufs', 'face-guard', 'face-mask', 
     'glasses', 'gloves', 'medical-suit', 'shoes', 
@@ -34,7 +31,6 @@ non_apd_classes = [
 st.title("🦺 Sistem Deteksi Alat Pelindung Diri (APD)")
 st.caption("Aplikasi deployment model YOLOv9, YOLOv10, dan YOLOv11 untuk deteksi APD")
 
-# Load semua model (pake cache biar ga reload terus)
 @st.cache_resource
 def get_models():
     models = {}
@@ -50,7 +46,6 @@ def get_models():
 
 models = get_models()
 
-# Info model
 with st.expander("ℹ️ Info Model"):
     st.write(f"**Model Tersedia**: {', '.join(models.keys())}")
     st.write("**Dataset**: SH-17 PPE Dataset")
@@ -58,7 +53,6 @@ with st.expander("ℹ️ Info Model"):
 
 st.markdown("---")
 
-# Step 1: Setting threshold dan model
 st.header("1️⃣ Atur Deteksi")
 col_a, col_b = st.columns(2)
 with col_a:
@@ -76,7 +70,6 @@ else:
 
 st.markdown("---")
 
-# Step 2: Upload gambar
 st.header("2️⃣ Upload Gambar")
 file = st.file_uploader("📤 Pilih gambar", type=["jpg", "jpeg", "png"])
 
@@ -173,7 +166,6 @@ if file is not None:
                         
                         df = pd.DataFrame(detections)
                         
-                        # Summary APD vs Non-APD
                         st.markdown("#### 🎯 Summary Kategori")
                         col1, col2, col3 = st.columns(3)
                         col1.metric("✅ APD", apd_count)
@@ -182,12 +174,10 @@ if file is not None:
                         
                         st.dataframe(df, use_container_width=True)
                         
-                        # Chart statistik
                         st.markdown("#### 📈 Statistik")
                         col1, col2, col3 = st.columns(3)
                         
                         with col1:
-                            # Pie chart APD vs Non-APD
                             kategori_data = df['Kategori'].value_counts()
                             fig1 = px.pie(values=kategori_data.values, names=kategori_data.index, 
                                           title="APD vs Non-APD", hole=0.3,
@@ -195,20 +185,17 @@ if file is not None:
                             st.plotly_chart(fig1, use_container_width=True)
                         
                         with col2:
-                            # Pie chart distribusi kelas
                             kelas_count = df['Kelas'].value_counts()
                             fig2 = px.pie(values=kelas_count.values, names=kelas_count.index, 
                                           title="Distribusi Kelas", hole=0.3)
                             st.plotly_chart(fig2, use_container_width=True)
                         
                         with col3:
-                            # Bar chart confidence
                             fig3 = px.bar(df, x='Kelas', y='Confidence', 
                                           title="Confidence per Objek",
                                           color='Kategori')
                             st.plotly_chart(fig3, use_container_width=True)
                         
-                        # Download hasil
                         st.markdown("#### ⬇️ Download Hasil")
                         col1, col2 = st.columns(2)
                         
@@ -236,7 +223,6 @@ if file is not None:
                                 key=f"csv_{model_name}"
                             )
                 
-                # Tambah separator jika multiple models
                 if len(models_to_use) > 1 and idx < len(models_to_use) - 1:
                     st.markdown("---")
             
@@ -244,4 +230,4 @@ if file is not None:
             try:
                 os.remove(temp_path)
             except:
-                pass  # Ga masalah kalau gagal hapus
+                pass  

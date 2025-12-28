@@ -1,4 +1,4 @@
-# Dockerfile untuk deploy YOLOv11 PPE Detection
+# Dockerfile untuk deploy YOLOv9, YOLOv10, YOLOv11 PPE Detection
 
 FROM python:3.11-slim
 
@@ -16,7 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
 COPY app.py .
-COPY best.pt .
+COPY yolov9.pt .
+COPY yolov10.pt .
+COPY yolov11.pt .
 COPY .streamlit .streamlit
 
 # Expose Streamlit port
